@@ -1,0 +1,373 @@
+// =============================================================================
+// LA DERNIÈRE TROMPETTE — MODÈLE DE DONNÉES
+//
+// CONVENTION MONÉTAIRE
+//   Tous les montants sont des entiers exprimés dans la plus petite unité de la
+//   devise configurée (content/site.ts -> commerce.currency).
+//   - XOF (FCFA) : pas de sous-unité -> 2500 signifie 2 500 FCFA.
+//   - EUR        : centimes          -> 2500 signifie 25,00 EUR.
+//   On évite ainsi toute erreur d'arrondi en virgule flottante, et les valeurs
+//   restent sérialisables vers les composants client (contrairement à Decimal).
+//
+//   Un prix `null` n'est pas une erreur : il signifie "prix sur demande", état
+//   légitime tant que la tarification n'est pas arrêtée avec le client.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------------------------------
+// AUTHENTIFICATION
+// ----------------------------------------------------------------------------
+
+enum Role {
+  ADMIN // accès complet, y compris gestion des utilisateurs et paramètres
+  EDITOR // contenu uniquement : produits, actualités, formations
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role      @default(EDITOR)
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// ----------------------------------------------------------------------------
+// CATALOGUE
+// ----------------------------------------------------------------------------
+
+model Category {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String?
+  /// Illustration de la catégorie sur la page /produits.
+  imageUrl    String?
+  position    Int     @default(0)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Product {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  name      String
+  /// Accroche courte affichée sur les cartes du catalogue.
+  shortDesc String?
+  /// Description longue de la fiche produit (texte simple, sauts de ligne conservés).
+  description String?
+  /// Informations complémentaires : conservation, origine, conseils d'usage.
+  extraInfo   String?
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  /// Prix de référence. `null` = "prix sur demande".
+  price       Int?
+  /// Unité de vente affichée à côté du prix : "le kg", "le sachet de 500 g"...
+  unit        String?
+  weightGrams Int?
+
+  inStock   Boolean @default(true)
+  featured  Boolean @default(false)
+  published Boolean @default(true)
+  position  Int     @default(0)
+
+  /// Surcharge des métadonnées SEO ; à défaut, name/shortDesc sont utilisés.
+  metaTitle       String?
+  metaDescription String?
+
+  images     ProductImage[]
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([published, featured])
+  @@map("products")
+}
+
+model ProductImage {
+  id  String @id @default(cuid())
+  url String
+  /// Texte alternatif — obligatoire côté formulaire pour l'accessibilité et le SEO.
+  alt String
+
+  position Int @default(0)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+/// Format de vente d'un produit : "Sachet 500 g", "Sac 25 kg"...
+/// Si un produit n'a aucun variant, le prix du produit fait foi.
+model ProductVariant {
+  id    String  @id @default(cuid())
+  label String
+  /// `null` = reprend le prix du produit parent.
+  price Int?
+  sku   String?
+
+  inStock  Boolean @default(true)
+  position Int     @default(0)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+// ----------------------------------------------------------------------------
+// COMMANDES
+// ----------------------------------------------------------------------------
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+/// Séparé de OrderStatus : une commande peut être livrée et encore impayée.
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+/// Extensible sans migration destructive : ajouter une valeur ici et l'activer
+/// dans content/site.ts -> commerce.paymentMethods suffit.
+enum PaymentMethod {
+  CASH_ON_DELIVERY
+  MOBILE_MONEY
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+model Customer {
+  id       String  @id @default(cuid())
+  fullName String
+  phone    String
+  email    String?
+  address  String
+  city     String?
+  notes    String?
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@map("customers")
+}
+
+model Order {
+  id String @id @default(cuid())
+  /// Référence lisible communiquée au client : "LDT-2026-0001".
+  reference String @unique
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  status        OrderStatus   @default(NEW)
+  paymentMethod PaymentMethod @default(CASH_ON_DELIVERY)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  subtotal    Int @default(0)
+  deliveryFee Int @default(0)
+  total       Int @default(0)
+
+  /// Message laissé par le client au moment de la commande.
+  customerNote String?
+  /// Note interne, jamais affichée publiquement.
+  adminNote    String?
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+/// Les champs `*Snapshot` dupliquent volontairement les données du produit :
+/// une commande doit rester lisible à l'identique même si le produit est
+/// renommé, re-tarifé ou supprimé. C'est la seule duplication du schéma.
+model OrderItem {
+  id String @id @default(cuid())
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  nameSnapshot    String
+  variantSnapshot String?
+  /// `null` = produit commandé sans prix public ("prix sur demande").
+  priceSnapshot   Int?
+
+  quantity  Int @default(1)
+  lineTotal Int @default(0)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// ----------------------------------------------------------------------------
+// PUBLICATION
+// ----------------------------------------------------------------------------
+
+model News {
+  id      String @id @default(cuid())
+  slug    String @unique
+  title   String
+  /// Résumé affiché en liste et utilisé comme meta description par défaut.
+  excerpt String?
+  /// Corps de l'article. Texte simple : les sauts de ligne font les paragraphes.
+  content String
+
+  coverUrl String?
+  coverAlt String?
+  category String?
+  author   String?
+
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, publishedAt])
+  @@map("news")
+}
+
+model Training {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  summary     String?
+  description String?
+
+  /// Listes à puces. Stockées en tableau natif PostgreSQL : pas de table dédiée
+  /// pour de simples lignes de texte sans identité propre.
+  objectives String[] @default([])
+  program    String[] @default([])
+
+  coverUrl String?
+  coverAlt String?
+
+  durationLabel String?
+  startDate     DateTime?
+  endDate       DateTime?
+  location      String?
+  /// `null` = "nous consulter".
+  price         Int?
+  seats         Int?
+  conditions    String?
+
+  published Boolean @default(false)
+  position  Int     @default(0)
+
+  registrations TrainingRegistration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@map("trainings")
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model TrainingRegistration {
+  id String @id @default(cuid())
+
+  trainingId String
+  training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  fullName String
+  phone    String
+  email    String?
+  message  String?
+
+  status RegistrationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  @@index([trainingId])
+  @@map("training_registrations")
+}
+
+// ----------------------------------------------------------------------------
+// CONTACT & CONFIGURATION
+// ----------------------------------------------------------------------------
+
+model ContactMessage {
+  id      String  @id @default(cuid())
+  name    String
+  email   String
+  phone   String?
+  subject String
+  message String
+
+  read     Boolean @default(false)
+  archived Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([read, createdAt])
+  @@map("contact_messages")
+}
+
+/// Contenu éditable sans redéploiement (coordonnées, textes d'accueil...).
+/// Une valeur présente ici prend le pas sur celle de content/site.ts.
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

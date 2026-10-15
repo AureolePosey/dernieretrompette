@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   DESIGN SYSTEM — LA DERNIÈRE TROMPETTE
+   Palette issue de la matière : terre cultivée, feuille de manioc,
+   gari torréfié, crème du tapioca. Aucune couleur criarde, aucun néon.
+   ========================================================================= */
+
+@theme {
+  /* --- Crème : fonds, cartes, respiration ------------------------------ */
+  --color-cream-50: #fbf8f1;
+  --color-cream-100: #f5efe3;
+  --color-cream-200: #ede4d3;
+  --color-cream-300: #e0d3bd;
+
+  /* --- Vert feuille : couleur de marque, actions principales ----------- */
+  --color-leaf-50: #f1f6f2;
+  --color-leaf-100: #dce9df;
+  --color-leaf-200: #b9d3bf;
+  --color-leaf-300: #8db697;
+  --color-leaf-400: #5e9370;
+  --color-leaf-500: #3d7a52;
+  --color-leaf-600: #2f6142;
+  --color-leaf-700: #274e36;
+  --color-leaf-800: #1f3e2c;
+  --color-leaf-900: #16301f;
+
+  /* --- Or gari : accent, prix, mises en avant -------------------------- */
+  --color-gari-50: #fdf7ec;
+  --color-gari-100: #f9e9cb;
+  --color-gari-200: #f2d398;
+  --color-gari-300: #e8b75f;
+  --color-gari-400: #dda03a;
+  --color-gari-500: #c98526;
+  /* 4.64:1 sur cream-100 : utilisable pour les surtitres en petits caracteres. */
+  --color-gari-600: #965f1a;
+  --color-gari-700: #83511a;
+
+  /* --- Terre : texte, bordures ----------------------------------------- */
+  --color-earth-100: #efe8de;
+  --color-earth-200: #dcd2c4;
+  /* earth-300 : BORDURES ET DECORATION UNIQUEMENT.
+     Son contraste (2.3:1 sur creme) est insuffisant pour du texte ; utiliser
+     earth-400 des qu il s agit de caracteres lisibles. */
+  --color-earth-300: #b5a392;
+  /* Texte secondaire. Assombri pour atteindre 4.61:1 sur cream-100,
+     le fond le plus sombre sur lequel il apparait (WCAG 2.1 AA, 1.4.3). */
+  --color-earth-400: #7c6857;
+  --color-earth-500: #6b5544;
+  --color-earth-700: #4a3728;
+  --color-earth-900: #2a1e15;
+
+  /* --- Latérite : alertes, ruptures de stock --------------------------- */
+  --color-clay-100: #f7e6e1;
+  --color-clay-500: #a8442a;
+  --color-clay-600: #8c3621;
+
+  /* --- Typographie ------------------------------------------------------ */
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* --- Rayons : légèrement organiques, jamais parfaitement ronds -------- */
+  --radius-card: 0.875rem;
+  --radius-pill: 999px;
+
+  /* --- Ombres : basses, chaudes, jamais bleutées ------------------------ */
+  --shadow-soft: 0 1px 2px rgb(42 30 21 / 0.04), 0 4px 16px rgb(42 30 21 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(42 30 21 / 0.05), 0 12px 32px rgb(42 30 21 / 0.1);
+
+  /* --- Animations ------------------------------------------------------- */
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================================================================
+   BASE
+   ========================================================================= */
+
+@layer base {
+  * {
+    border-color: var(--color-earth-200);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-cream-50);
+    color: var(--color-earth-900);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern", "liga";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-gari-200);
+    color: var(--color-earth-900);
+  }
+
+  /* Anneau de focus unique et visible sur toute l'application (WCAG 2.4.7). */
+  :focus-visible {
+    outline: 2px solid var(--color-leaf-600);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Empêche le contenu de passer sous le header collant lors d'une ancre. */
+  :target {
+    scroll-margin-top: 6rem;
+  }
+}
+
+/* =========================================================================
+   UTILITAIRES
+   ========================================================================= */
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) {
+    padding-inline: 2rem;
+  }
+  @media (min-width: 1280px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Texte réservé aux lecteurs d'écran. */
+@utility sr-only-focusable {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+  &:focus {
+    position: fixed;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
+
+/* Trame discrète évoquant la toile de jute / le tamis. */
+@utility texture-grain {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(42 30 21 / 0.06) 1px, transparent 0);
+  background-size: 14px 14px;
+}
+
+/* =========================================================================
+   ACCESSIBILITÉ — MOUVEMENT RÉDUIT
+   Respecte prefers-reduced-motion sans casser la visibilité du contenu :
+   les éléments animés en « both » doivent rester à leur état final.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
