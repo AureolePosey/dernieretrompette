@@ -1,5 +1,6 @@
 import { Section, SectionHeading, Rule } from "@/components/ui/section";
 import { Media } from "@/components/ui/media";
+import { VideoPlayer } from "@/components/shared/video-player";
 import { savoirFaire } from "@content/site";
 
 /**
@@ -23,12 +24,25 @@ export function SavoirFaire() {
           <Rule />
 
           <Media
-            src={null}
-            alt="Étape de transformation du manioc"
+            src="/images/transformation-pressage.jpeg"
+            alt="Membre de la coopérative au poste de pressage du manioc"
             ratio="wide"
             sizes="(max-width: 1024px) 100vw, 40vw"
             placeholderLabel="Photo d'une étape de transformation"
             className="mt-9 rounded-card"
+          />
+
+          {/*
+            La vidéo illustre l'étape 2 (la préparation). Elle ne se télécharge
+            qu'au clic : voir le commentaire de VideoPlayer sur le coût des
+            données mobiles.
+          */}
+          <VideoPlayer
+            src="/images/lavage-manioc.mp4"
+            poster="/images/lavage-manioc-apercu.jpg"
+            alt="Lavage des tubercules de manioc dans le bassin de la coopérative"
+            caption="Le lavage des tubercules, juste après la récolte."
+            className="mt-6 max-w-[16rem]"
           />
         </div>
 

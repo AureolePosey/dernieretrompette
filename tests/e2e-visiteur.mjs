@@ -30,7 +30,7 @@ page.on("pageerror", (error) => consoleErrors.push(`pageerror: ${error.message}`
 try {
   // ------------------------------------------------------------------------
   report.section("Accueil");
-  await page.goto(`${BASE_URL}/`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/`, { waitUntil: "load" });
 
   report.check(
     "Un seul titre H1, comme l'exige la hiérarchie sémantique",
@@ -42,7 +42,7 @@ try {
 
   // ------------------------------------------------------------------------
   report.section("Catalogue");
-  await page.goto(`${BASE_URL}/produits`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/produits`, { waitUntil: "load" });
 
   const productLinks = await page.$$eval('a[href^="/produits/"]', (els) => [
     ...new Set(els.map((e) => e.getAttribute("href"))),
@@ -61,7 +61,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Fiche produit et panier");
   const firstProduct = productLinks[0];
-  await page.goto(`${BASE_URL}${firstProduct}`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}${firstProduct}`, { waitUntil: "load" });
 
   await clickByText(page, "button", "Ajouter au panier", { settle: 800 });
 
@@ -71,7 +71,7 @@ try {
   });
   report.check("Le compteur du panier s'incrémente", badge === "1", `compteur = ${badge}`);
 
-  await page.goto(`${BASE_URL}/panier`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/panier`, { waitUntil: "load" });
   const cartLines = await page.$$eval("main ul li", (els) => els.length);
   report.check(
     "Le panier survit au changement de page",
@@ -95,7 +95,7 @@ try {
 
   // ------------------------------------------------------------------------
   report.section("Commande");
-  await page.goto(`${BASE_URL}/commande`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/commande`, { waitUntil: "load" });
 
   await page.type('input[name="fullName"]', "Client de recette");
   await page.type('input[name="phone"]', "+229 01 23 45 67");
@@ -120,7 +120,7 @@ try {
 
   // ------------------------------------------------------------------------
   report.section("Contact");
-  await page.goto(`${BASE_URL}/contact`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/contact`, { waitUntil: "load" });
 
   await page.type('input[name="name"]', "Visiteur de recette");
   await page.type('input[name="email"]', "recette@example.com");
@@ -138,7 +138,7 @@ try {
 
   // Cas valide pour le navigateur, invalide pour le serveur : prouve que la
   // validation serveur agit pour son propre compte.
-  await page.goto(`${BASE_URL}/contact`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/contact`, { waitUntil: "load" });
   await page.type('input[name="name"]', "Test validation");
   await page.type('input[name="email"]', "validation@example.com");
   await page.type('input[name="subject"]', "Test");
@@ -153,7 +153,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Erreurs et états");
   const notFound = await page.goto(`${BASE_URL}/page-inexistante-de-recette`, {
-    waitUntil: "networkidle2",
+    waitUntil: "load",
   });
   report.check("Page inconnue : HTTP 404", notFound.status() === 404, `HTTP ${notFound.status()}`);
 

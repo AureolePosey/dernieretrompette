@@ -40,7 +40,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Authentification");
 
-  await page.goto(`${BASE_URL}/admin`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin`, { waitUntil: "load" });
   report.check("Accès non authentifié redirigé vers la connexion", page.url().includes("/admin/login"));
 
   await page.type('input[name="email"]', "admin@laderniere-trompette.test");
@@ -57,7 +57,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Produit : créer, modifier, publier, dépublier");
 
-  await page.goto(`${BASE_URL}/admin/produits/nouveau`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/produits/nouveau`, { waitUntil: "load" });
 
   const productName = `Produit de recette ${stamp}`;
   await page.type('input[name="name"]', productName);
@@ -78,7 +78,7 @@ try {
     return row?.querySelector('a[href^="/admin/produits/"]')?.getAttribute("href") ?? null;
   }, productName);
 
-  await page.goto(`${BASE_URL}${editHref}`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}${editHref}`, { waitUntil: "load" });
 
   await page.evaluate(() => {
     document.querySelector('input[name="price"]').value = "";
@@ -104,7 +104,7 @@ try {
     return link?.getAttribute("href") ?? null;
   });
 
-  await page.goto(`${BASE_URL}${publicHref}`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}${publicHref}`, { waitUntil: "load" });
   const onPublicSite = await page.evaluate(
     (n) => ({
       nom: document.body.textContent.includes(n),
@@ -118,14 +118,14 @@ try {
   report.check("Site public : nouveau prix affiché", onPublicSite.prix);
   report.check("Site public : format proposé", onPublicSite.format);
 
-  await page.goto(`${BASE_URL}/admin/produits`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/produits`, { waitUntil: "load" });
   await page.evaluate((n) => {
     const row = [...document.querySelectorAll("tr")].find((r) => r.textContent.includes(n));
     [...row.querySelectorAll("button")].find((b) => b.textContent.includes("Publié")).click();
   }, productName);
   await wait(2500);
 
-  const afterUnpublish = await page.goto(`${BASE_URL}${publicHref}`, { waitUntil: "networkidle2" });
+  const afterUnpublish = await page.goto(`${BASE_URL}${publicHref}`, { waitUntil: "load" });
   report.check(
     "Produit dépublié : 404 côté public",
     afterUnpublish.status() === 404,
@@ -135,7 +135,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Actualité : créer et publier");
 
-  await page.goto(`${BASE_URL}/admin/actualites/nouveau`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/actualites/nouveau`, { waitUntil: "load" });
   const newsTitle = `Annonce de recette ${stamp}`;
   await page.type('input[name="title"]', newsTitle);
   await page.type('textarea[name="excerpt"]', "Résumé de l'annonce de recette.");
@@ -147,7 +147,7 @@ try {
   await clickByText(page, "button", "Créer l'actualité", { navigate: true });
   report.check("Actualité créée", page.url().includes("/admin/actualites"));
 
-  await page.goto(`${BASE_URL}/actualites`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/actualites`, { waitUntil: "load" });
   report.check(
     "Site public : actualité listée",
     await page.evaluate((t) => document.body.textContent.includes(t), newsTitle),
@@ -156,7 +156,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Formation : créer et publier");
 
-  await page.goto(`${BASE_URL}/admin/formations/nouveau`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/formations/nouveau`, { waitUntil: "load" });
   const trainingTitle = `Formation de recette ${stamp}`;
   await page.type('input[name="title"]', trainingTitle);
   await page.type('textarea[name="summary"]', "Résumé de la formation de recette.");
@@ -168,7 +168,7 @@ try {
   await clickByText(page, "button", "Créer la formation", { navigate: true });
   report.check("Formation créée", page.url().includes("/admin/formations"));
 
-  await page.goto(`${BASE_URL}/formations`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/formations`, { waitUntil: "load" });
   report.check(
     "Site public : formation listée",
     await page.evaluate((t) => document.body.textContent.includes(t), trainingTitle),
@@ -177,13 +177,13 @@ try {
   // ------------------------------------------------------------------------
   report.section("Commande : suivi du statut");
 
-  await page.goto(`${BASE_URL}/admin/commandes`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/commandes`, { waitUntil: "load" });
   const orderHref = await page.evaluate(
     () => document.querySelector('a[href^="/admin/commandes/"]')?.getAttribute("href") ?? null,
   );
 
   if (orderHref) {
-    await page.goto(`${BASE_URL}${orderHref}`, { waitUntil: "networkidle2" });
+    await page.goto(`${BASE_URL}${orderHref}`, { waitUntil: "load" });
     await page.select('select[name="status"]', "CONFIRMED");
     await page.select('select[name="paymentStatus"]', "PAID");
     await page.type('textarea[name="adminNote"]', "Client rappelé, commande confirmée.");
@@ -194,7 +194,7 @@ try {
       await page.evaluate(() => document.body.textContent.includes("Commande mise à jour")),
     );
 
-    await page.reload({ waitUntil: "networkidle2" });
+    await page.reload({ waitUntil: "load" });
     const persisted = await page.evaluate(() => ({
       statut: document.body.textContent.includes("Confirmée"),
       paiement: document.body.textContent.includes("Payée"),
@@ -207,7 +207,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Paramètres : saisie et répercussion publique");
 
-  await page.goto(`${BASE_URL}/admin/parametres`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/parametres`, { waitUntil: "load" });
 
   const phone = "+229 01 96 00 00 00";
   await page.evaluate(() => {
@@ -226,7 +226,7 @@ try {
     await page.evaluate(() => document.body.textContent.includes("Paramètres enregistrés")),
   );
 
-  await page.goto(`${BASE_URL}/contact`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/contact`, { waitUntil: "load" });
   report.check(
     "Site public : téléphone saisi affiché",
     await page.evaluate((p) => document.body.textContent.includes(p), phone),
@@ -239,7 +239,7 @@ try {
   // ------------------------------------------------------------------------
   report.section("Déconnexion");
 
-  await page.goto(`${BASE_URL}/admin`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin`, { waitUntil: "load" });
   await page.evaluate(() => {
     [...document.querySelectorAll("button")]
       .find((b) => b.getAttribute("aria-label") === "Se déconnecter")
@@ -248,7 +248,7 @@ try {
   await wait(3000);
   report.check("Déconnexion effective", page.url().includes("/admin/login"));
 
-  await page.goto(`${BASE_URL}/admin/produits`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/produits`, { waitUntil: "load" });
   report.check("Accès refusé après déconnexion", page.url().includes("/admin/login"));
 } finally {
   await browser.close();

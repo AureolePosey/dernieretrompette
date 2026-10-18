@@ -16,8 +16,14 @@ import { getSettings } from "@/lib/settings";
  * renseigner `heroImage` ci-dessous.
  */
 
-/** Photo d'ouverture. `null` tant que le client n'a pas fourni ses visuels. */
-const heroImage: string | null = null;
+/**
+ * Photo d'ouverture — le premier visuel que voit un visiteur.
+ *
+ * Choix actuel : la torréfaction du gari, geste le plus identifiable du métier
+ * de la coopérative. Pour en changer, déposer la nouvelle photo dans
+ * public/images et remplacer ce seul chemin.
+ */
+const heroImage: string | null = "/images/transformation-torrefaction.jpeg";
 
 export async function Hero() {
   const settings = await getSettings();
@@ -78,7 +84,7 @@ export async function Hero() {
           <div className="relative lg:h-[34rem]">
             <Media
               src={heroImage}
-              alt="Atelier de transformation de La Dernière Trompette"
+              alt="Membre de la coopérative torréfiant le gari sur un foyer traditionnel"
               ratio="hero"
               priority
               sizes="(max-width: 1024px) 100vw, 45vw"

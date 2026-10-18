@@ -85,12 +85,12 @@ export function createReporter(title) {
 
 /** Connecte un administrateur et laisse la page sur /admin. */
 export async function loginAsAdmin(page) {
-  await page.goto(`${BASE_URL}/admin/login`, { waitUntil: "networkidle2" });
+  await page.goto(`${BASE_URL}/admin/login`, { waitUntil: "load" });
   await page.type('input[name="email"]', ADMIN_EMAIL);
   await page.type('input[name="password"]', ADMIN_PASSWORD);
 
   await Promise.all([
-    page.waitForNavigation({ waitUntil: "networkidle2", timeout: 30000 }),
+    page.waitForNavigation({ waitUntil: "load", timeout: 30000 }),
     page.evaluate(() =>
       [...document.querySelectorAll("button")]
         .find((b) => b.textContent.includes("Se connecter"))
@@ -111,10 +111,14 @@ export async function clickByText(page, selector, text, { navigate = false, sett
   );
 
   if (navigate) {
+    // `load` et non `networkidle2` : depuis que les pages portent de vraies
+    // photographies et que Next.js précharge les liens visibles, le réseau ne
+    // redevient jamais totalement inactif et l'attente expirerait.
     await Promise.all([
-      page.waitForNavigation({ waitUntil: "networkidle2", timeout: 30000 }),
+      page.waitForNavigation({ waitUntil: "load", timeout: 30000 }),
       act,
     ]);
+    await wait(1200);
   } else {
     await act;
     await wait(settle);

@@ -27,6 +27,51 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 /**
+ * Galerie de la page « À propos ».
+ *
+ * Chaque entrée porte DEUX textes distincts, qui ne jouent pas le même rôle :
+ *   - `alt` décrit la scène pour qui ne voit pas l'image (lecteurs d'écran,
+ *     moteurs de recherche) ;
+ *   - `legende` est lue par tout le monde, sous la photo.
+ * Les confondre reviendrait à répéter deux fois la même chose à l'écran, ou à
+ * priver d'information ceux qui n'accèdent pas à l'image.
+ *
+ * Pour modifier la galerie, ajouter ou retirer une entrée ici suffit.
+ */
+const GALERIE = [
+  {
+    src: "/images/transformation-torrefaction.jpeg",
+    alt: "Membre de la coopérative torréfiant le gari sur un foyer traditionnel",
+    legende: "La torréfaction du gari",
+  },
+  {
+    src: "/images/transformation-pressage.jpeg",
+    alt: "Membre de la coopérative au poste de pressage du manioc",
+    legende: "Le pressage du manioc",
+  },
+  {
+    src: "/images/equipe-groupe.jpeg",
+    alt: "Les membres de la coopérative réunis devant les locaux",
+    legende: "Les membres de la coopérative",
+  },
+  {
+    src: "/images/reunion-cooperative.jpeg",
+    alt: "Réunion des membres de la coopérative",
+    legende: "Une assemblée des membres",
+  },
+  {
+    src: "/images/logistique-remorque.jpeg",
+    alt: "Tracteur et remorque utilisés par la coopérative",
+    legende: "Les moyens logistiques",
+  },
+  {
+    src: "/images/presentation-produits-2.jpg",
+    alt: "Sachets de gari, tapioca et farine présentés sur une table",
+    legende: "Les produits conditionnés",
+  },
+] as const;
+
+/**
  * Page « À propos ».
  *
  * Histoire, vision et mission proviennent de l'administration
@@ -92,8 +137,8 @@ export default async function AboutPage() {
 
           <div className="relative">
             <Media
-              src={null}
-              alt="La coopérative La Dernière Trompette"
+              src="/images/membres-devant-locaux-1.jpeg"
+              alt="Les membres de la coopérative réunis devant leurs locaux"
               ratio="portrait"
               sizes="(max-width: 1024px) 100vw, 45vw"
               placeholderLabel="Photo de présentation de la coopérative"
@@ -211,28 +256,23 @@ export default async function AboutPage() {
         <SectionHeading
           eyebrow="En images"
           title="La coopérative au quotidien"
-          description="Cette galerie accueillera les photographies fournies par la coopérative."
+          description="Quelques images du travail quotidien de la coopérative."
           align="center"
         />
 
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            "Les parcelles et la récolte",
-            "L'atelier de transformation",
-            "Le conditionnement",
-            "Les membres de la coopérative",
-            "Une session de formation",
-            "Les produits finis",
-          ].map((caption) => (
-            <li key={caption}>
-              <Media
-                src={null}
-                alt={caption}
-                ratio="photo"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
-                placeholderLabel={caption}
-                className="rounded-card"
-              />
+          {GALERIE.map((photo) => (
+            <li key={photo.src}>
+              <figure>
+                <Media
+                  src={photo.src}
+                  alt={photo.alt}
+                  ratio="photo"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                  className="rounded-card"
+                />
+                <figcaption className="mt-2 text-sm text-earth-500">{photo.legende}</figcaption>
+              </figure>
             </li>
           ))}
         </ul>

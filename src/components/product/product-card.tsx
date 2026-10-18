@@ -36,10 +36,15 @@ export function ProductCard({
       )}
     >
       <div className="relative">
+        {/*
+          Cadre CARRÉ et non 4/3 : les photos de packaging sont verticales, et
+          un cadre paysage leur couperait le haut du sachet — donc la marque et
+          le nom du produit, précisément ce qu'il faut voir.
+        */}
         <Media
           src={image?.url}
           alt={image?.alt ?? product.name}
-          ratio="photo"
+          ratio="square"
           priority={priority}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
           placeholderLabel="Photo à fournir"

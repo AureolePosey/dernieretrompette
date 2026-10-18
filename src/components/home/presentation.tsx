@@ -18,8 +18,8 @@ export function Presentation() {
       <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-20">
         <div className="relative order-2 lg:order-1">
           <Media
-            src={null}
-            alt="Membres de la coopérative au travail"
+            src="/images/equipe-trois-membres.jpeg"
+            alt="Trois membres de la coopérative en tenue de travail"
             ratio="photo"
             sizes="(max-width: 1024px) 100vw, 45vw"
             placeholderLabel="Photo des membres de la coopérative"
