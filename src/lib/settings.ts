@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 import { SETTING_KEYS, type SettingKey } from "@/lib/settings-fields";
-import { contact, site, social, TODO } from "@content/site";
+import { about, contact, site, social, TODO } from "@content/site";
 
 /**
  * Paramètres du site : valeurs par défaut du code, surchargées par la base.
@@ -107,9 +107,9 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
       tiktok: pick("social.tiktok", social.tiktok),
     },
     deliveryArea: pick("commerce.deliveryArea", TODO),
-    aboutHistory: pick("about.history", ""),
-    aboutVision: pick("about.vision", ""),
-    aboutMission: pick("about.mission", ""),
+    aboutHistory: pick("about.history", about.history),
+    aboutVision: pick("about.vision", about.vision),
+    aboutMission: pick("about.mission", about.mission),
   };
 });
 

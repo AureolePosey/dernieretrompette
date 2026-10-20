@@ -41,7 +41,9 @@ export const contact = {
   phone: "+229 01 96 08 93 17", // fourni par le client
   phoneSecondary: "+229 01 95 45 80 77", // fourni par le client
   whatsapp: "2290196089317", // numéro principal, confirmé par le client (format wa.me : chiffres seuls)
-  email: TODO, // ex. « contact@laderniere-trompette.com »
+  // Adresse figurant sur les emballages de la coopérative, confirmée par le
+  // client. À remplacer par l'adresse du domaine une fois celui-ci en service.
+  email: "scoopsdernieretrompette@gmail.com",
   /**
    * La coopérative a DEUX implantations. Elles sont séparées par une ligne
    * vide : l'affichage conserve les sauts de ligne et les présente comme deux
@@ -180,3 +182,43 @@ export const commerce = {
 } as const;
 
 export type PaymentMethodOption = (typeof commerce.paymentMethods)[number];
+
+/**
+ * Textes de la page « À propos ».
+ *
+ * RÈGLE APPLIQUÉE ICI : ces textes ne s'appuient que sur des éléments
+ * vérifiables — la dénomination officielle, les implantations, les produits et
+ * leurs emballages, les activités déclarées par la coopérative.
+ *
+ * Aucune date de création, aucun effectif, aucun volume de production, aucune
+ * certification ni aucun partenariat n'y figure : ces informations n'ont pas
+ * été communiquées, et les inventer exposerait la coopérative à démentir son
+ * propre site.
+ *
+ * Les passages restant à compléter sont marqués [À RENSEIGNER] et visibles sur
+ * le site tant qu'ils ne sont pas remplis. Ils se modifient depuis
+ * /admin/parametres, sans toucher au code.
+ */
+export const about = {
+  history: `La Dernière Trompette réunit des transformatrices et des transformateurs du manioc au sein d'une société coopérative. Leur métier commence là où s'arrête celui du planteur : c'est après la récolte, dans le lavage, le pressage, la fermentation, la torréfaction et le séchage, que le tubercule devient gari, tapioca ou farine.
+
+La coopérative est installée à Gbéna-Nord, à Ouidah, où se trouvent son siège et son unité de transformation. Une seconde adresse, à Cotonou, assure la liaison avec les points de vente.
+
+[À RENSEIGNER] L'année de création de la coopérative et les circonstances de sa fondation : qui en a pris l'initiative, et pour répondre à quel besoin.`,
+
+  vision: `Que le manioc cultivé ici soit transformé ici, et qu'il nourrisse ici.
+
+Le Bénin importe une part importante de la farine qu'il consomme. La farine panifiable issue du manioc peut remplacer la farine de blé à quantité égale, dans le pain comme dans la pâtisserie. Chaque sachet vendu est un peu de valeur qui reste au pays, et un revenu de plus pour les membres de la coopérative.`,
+
+  // Texte BRUT : le rendu respecte les sauts de ligne mais n'interprète aucune
+  // mise en forme. Des astérisques de gras s'afficheraient tels quels.
+  mission: `Nous intervenons sur toute la chaîne, de la parcelle au point de vente.
+
+Produire : accompagner les membres dans la culture du manioc et des autres productions agricoles.
+
+Transformer : conduire chaque étape dans notre unité, pour maîtriser la qualité du produit fini plutôt que la subir.
+
+Commercialiser : conditionner, étiqueter et distribuer nos produits sous notre propre marque, afin que la valeur revienne à ceux qui l'ont créée.
+
+Former : transmettre ce savoir-faire aux producteurs et transformateurs qui souhaitent se perfectionner.`,
+} as const;

@@ -38,6 +38,7 @@ const ADMIN_PAGES = [
   "/admin/messages",
   "/admin/categories",
   "/admin/parametres",
+  "/admin/compte",
 ];
 
 const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];

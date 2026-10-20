@@ -16,6 +16,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  UserRound,
   X,
 } from "lucide-react";
 import { logout } from "@/server/actions/auth";
@@ -52,7 +53,10 @@ const NAV_SECTIONS = [
   },
   {
     label: "Configuration",
-    items: [{ href: "/admin/parametres", label: "Paramètres", Icon: Settings, exact: false }],
+    items: [
+      { href: "/admin/parametres", label: "Paramètres", Icon: Settings, exact: false },
+      { href: "/admin/compte", label: "Mon compte", Icon: UserRound, exact: false },
+    ],
   },
 ] as const;
 
