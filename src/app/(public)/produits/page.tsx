@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductFilters } from "@/components/product/product-filters";
 import { EmptyState } from "@/components/shared/empty-state";
+import { VideoPlayer } from "@/components/shared/video-player";
+import { Section, SectionHeading } from "@/components/ui/section";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { getCategories, getProducts } from "@/server/queries";
 
@@ -101,6 +103,35 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
           />
         )}
       </div>
+
+      {/*
+        Vidéos de présentation, placées APRÈS la grille : un visiteur vient
+        d'abord chercher un produit précis. Comme ailleurs sur le site, elles ne
+        se téléchargent qu'au clic.
+      */}
+      <Section tone="cream" spacing="tight">
+        <SectionHeading
+          eyebrow="En vidéo"
+          title="Nos produits conditionnés"
+          description="Quelques images de nos sachets prêts à partir, filmées à la coopérative."
+          align="center"
+        />
+
+        <div className="mx-auto mt-10 grid max-w-2xl gap-8 sm:grid-cols-2">
+          <VideoPlayer
+            src="/images/video-produits.mp4"
+            poster="/images/video-produits-apercu.jpg"
+            alt="Sachets de gari et de tapioca de la coopérative, présentés sur une table"
+            caption="Gari et tapioca, conditionnés et étiquetés."
+          />
+          <VideoPlayer
+            src="/images/video-farine.mp4"
+            poster="/images/video-farine-apercu.jpg"
+            alt="Sacs de farine panifiable d'un kilogramme munis d'une poignée"
+            caption="La farine panifiable, en sacs d'un kilo."
+          />
+        </div>
+      </Section>
     </>
   );
 }

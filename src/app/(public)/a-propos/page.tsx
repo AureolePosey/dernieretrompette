@@ -50,24 +50,24 @@ const GALERIE = [
     legende: "Le pressage du manioc",
   },
   {
+    src: "/images/pdg2.jpeg",
+    alt: "Responsable de la coopérative inspectant une parcelle après la récolte",
+    legende: "Au champ, après la récolte",
+  },
+  {
     src: "/images/equipe-groupe.jpeg",
     alt: "Les membres de la coopérative réunis devant les locaux",
     legende: "Les membres de la coopérative",
   },
   {
-    src: "/images/reunion-cooperative.jpeg",
-    alt: "Réunion des membres de la coopérative",
-    legende: "Une assemblée des membres",
+    src: "/images/gariii3.jpeg",
+    alt: "Sachets de gari d'un kilogramme, munis d'une poignée, prêts à la vente",
+    legende: "Le gari conditionné en sachets d'un kilo",
   },
   {
-    src: "/images/logistique-remorque.jpeg",
-    alt: "Tracteur et remorque utilisés par la coopérative",
-    legende: "Les moyens logistiques",
-  },
-  {
-    src: "/images/presentation-produits-2.jpg",
-    alt: "Sachets de gari, tapioca et farine présentés sur une table",
-    legende: "Les produits conditionnés",
+    src: "/images/farineplanif.jpeg",
+    alt: "Sacs de farine panifiable d'un kilogramme alignés sur une étoffe",
+    legende: "La farine panifiable, prête à partir",
   },
 ] as const;
 
@@ -137,8 +137,8 @@ export default async function AboutPage() {
 
           <div className="relative">
             <Media
-              src="/images/membres-devant-locaux-1.jpeg"
-              alt="Les membres de la coopérative réunis devant leurs locaux"
+              src="/images/pdg.jpeg"
+              alt="Responsable de la coopérative au travail dans une parcelle de manioc"
               ratio="portrait"
               sizes="(max-width: 1024px) 100vw, 45vw"
               placeholderLabel="Photo de présentation de la coopérative"
